@@ -1,5 +1,12 @@
-(setq inhibit-startup-message t)
+;; startup message page off
+(setq inhibit-startup-message t) 
+;; mode tinkerings
 (tool-bar-mode -1)
+(tooltip-mode -1)
+(set-fringe-mode 10)
+(menu-bar-mode -1)
+;; font (alternatives Avenir, Chalkboard, Charter, Courier, Georgia, Menlo, Monaco, Optima)
+(set-face-attribute 'default nil :font "Avenir" :height 150) 
 (fset 'yes-or-no-p 'y-or-n-p)
 (global-set-key (kbd "<f5>") 'revert-buffer)
 
@@ -20,6 +27,15 @@
 					; 	 (enable-theme 'ample-flat)
 					; 	 (enable-theme 'ample-light))
 					;   :defer t)
+
+; (use-package doom-modeline
+;  :ensure t
+;  :init (doom-modeline-mode 1))
+
+(use-package exec-path-from-shell
+  :ensure t
+  :config
+  (exec-path-from-shell-initialize))
 
 (use-package try
   :ensure t)
@@ -95,6 +111,44 @@
 (use-package htmlize
 :ensure t)
 
+(use-package auctex
+  :defer t
+  :ensure t
+  :config
+  (setq TeX-auto-save t))
+
+(use-package flycheck
+:ensure t
+:init
+(global-flycheck-mode t))
+
+(use-package yasnippet
+:ensure t
+:init
+(yas-global-mode 1))
+
+(use-package yasnippet-snippets
+  :ensure t)
+
+(with-eval-after-load 'python
+  (defun python-shell-completion-native-try ()
+    "Return non-nil if can trigger native completion."
+    (let ((python-shell-completion-native-enable t)
+	  (python-shell-completion-native-output-timeout
+	   python-shell-completion-native-try-output-timeout))
+      (python-shell-completion-native-get-completions
+       (get-buffer-process (current-buffer))
+       nil "_"))))
+(setq python-shell-completion-native-enable nil)
+(setq python-shell-interpreter "python3")
+
+
+
+(use-package command-log-mode
+  :ensure t
+  :config
+  (global-command-log-mode))
+
 (use-package auto-complete
 :ensure t
 :init 
@@ -102,3 +156,22 @@
 (ac-config-default)
 (global-auto-complete-mode t)
 ))
+
+(use-package ivy
+  :ensure t
+  :diminish
+  :bind (("C-s" . swiper)
+	 :map ivy-minibuffer-map
+	 ("TAB" . ivy-alt-done)
+	 ("C-l" . ivy-alt-done)
+	 ("C-j" . ivy-next-line)
+	 ("C-k" . ivy-previous-line)
+	 :map ivy-switch-buffer-map
+	 ("C-k" . ivy-previous-line)
+	 ("C-l" . ivy-done)
+	 ("C-d" . ivy-switch-buffer-kill)
+	 :map ivy-reverse-i-search-map
+	 ("C-k" . ivy-previous-line)
+	 ("C-d" . ivy-reverse-i-search-kill))
+  :config
+  (ivy-mode 1))
